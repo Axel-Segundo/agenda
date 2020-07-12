@@ -24,7 +24,7 @@
     
         <input type="text" id="buscar" class="buscador sombra" placeholder="Buscar Contactos...">
     
-        <p class="total-contactos"><span>2</span> Contactos</p>
+        <p class="total-contactos"><span></span> Contactos</p>
     
         <div class="contenedor-tabla">
             <table id="listado-contactos" class="listado-contactos">

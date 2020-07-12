@@ -9,3 +9,13 @@ function obtenerContactos() {
         return false;
     }
 }
+
+function obtenerContacto($id) {
+    include 'bd.php';
+    try {
+        return $conexion->query("SELECT id, nombre, empresa, telefono FROM contactos WHERE id = $id");
+    } catch (Exception $e) {
+        echo "Error!!" . $e->getMessage(). "<br>";
+        return false;
+    }
+}

@@ -1,5 +1,6 @@
 const formularioContactos = document.querySelector('#contacto'),
-      listadoContactos = document.querySelector('#listado-contacto tbody');
+      listadoContactos = document.querySelector('#listado-contacto tbody'),
+      inputBuscador = document.querySelector('#buscar');
 
 eventListener();
 
@@ -8,7 +9,13 @@ function eventListener() {
     formularioContactos.addEventListener('submit', leerFormulario);
 
     // Listener para eliminar un boton
-    listadoContactos.addEventListener('cilck', eliminarContacto);
+    if(listadoContactos){
+        listadoContactos.addEventListener('cilck', eliminarContacto);
+    }
+
+    inputBuscador.addEventListener('input', buscarContactos);
+
+    numeroContactos();
 }
 
 function leerFormulario(e) {
@@ -34,7 +41,9 @@ function leerFormulario(e) {
             // Crearemos un nuevo elemento
             insertarBD(infoContacto);
         } else{
-            // Editar contacto
+            const idRegistro = document.querySelector('#id').value;
+            infoContacto.append('id', idRegistro);
+            actualizarRegistro(infoContacto);
         }
     }
 }
@@ -103,10 +112,35 @@ function insertarBD(datos){
             document.querySelector('form').reset();
             // Mostrar la notificación
             mostrarNotificacion('Contacto Creado Correctamente', 'correcto');
+
+            numeroContactos();
         }
     }
     // enviar los datos
     xhr.send(datos)
+}
+
+function actualizarRegistro(datos){
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('POST', 'inc/modelos/modelos-contacto.php', true);
+
+    xhr.onload = function(){
+        if (this.status === 200) {
+            const respuesta = JSON.parse(xhr.responseText);
+            
+            if (respuesta.respuesta === 'correcto') {
+                mostrarNotificacion('Contacto Editado Correctamente', 'correcto');
+            } else {
+                mostrarNotificacion('Hubo un error', 'correcto');
+            }
+            setTimeout(() => {
+                window.location.href = 'index.php';
+            }, 4000);
+        }
+    }
+
+    xhr.send(datos);
 }
 
 // Eliminar el contacto
@@ -162,4 +196,33 @@ function mostrarNotificacion(mensaje, clase) {
             }, 500);
         }, 3000);
     }, 100);
+}
+
+function buscarContactos(e) {
+    const expresion = new RegExp(e.target.value, "i"),
+          registros = document.querySelectorAll('tbody tr');
+
+          registros.forEach(registro => {
+              registro.style.display = 'none';
+
+              if (registro.childNodes[1].textContent.replace(/\s/g, " ").search(expresion) !=-1 ) {
+                registro.style.display = 'table-row';
+              }
+              numeroContactos();
+          })
+}
+
+function numeroContactos() {
+    const totalContactos = document.querySelectorAll('tbody tr'),
+          contenedorNumero = document.querySelector('.total-contactos spam');
+
+    let total = 0;
+
+    totalContactos.forEach(contacto => {
+        if (contacto.style.display === '' || contacto.style.display == 'table-row') {
+            total++;
+        }
+    });
+
+    contenedorNumero.textContent = total;
 }
